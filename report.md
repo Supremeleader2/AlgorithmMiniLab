@@ -195,7 +195,6 @@ Output: `14` — matches taking modules 1 and 3 (time `3+7=10`, value `4+10=14`)
 - **Space:** `O(T)` — a single 1D `dp` array of size `T + 1`, reused
   across items instead of a full `O(n * T)` 2D table.
 
-### Final Thoughts
 # Design Choices: Why These Approaches
  
 ## Problem A — Merge Sort over Fenwick Tree
