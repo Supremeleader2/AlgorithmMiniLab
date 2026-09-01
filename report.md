@@ -194,3 +194,47 @@ Output: `14` — matches taking modules 1 and 3 (time `3+7=10`, value `4+10=14`)
   up to `T`.
 - **Space:** `O(T)` — a single 1D `dp` array of size `T + 1`, reused
   across items instead of a full `O(n * T)` 2D table.
+
+### Final Thoughts
+# Design Choices: Why These Approaches
+ 
+## Problem A — Merge Sort over Fenwick Tree
+ 
+A Binary Indexed Tree (Fenwick Tree) can also count inversions in
+`O(n log n)` by scanning left-to-right and querying "how many larger
+elements have I already seen." Both approaches have identical
+asymptotic complexity, so the choice came down to implementation
+risk: a Fenwick Tree needs a separate data structure with its own
+indexing logic, while merge sort's inversion count falls out
+naturally from a merge step most implementations already need to get
+right. We chose the simpler, less error-prone option since it
+doesn't cost any speed.
+ 
+## Problem B — Heap-based greedy over Timeline Sweep
+ 
+An alternative is to sort all start times and end times separately
+and sweep through them as `+1`/`-1` events, tracking the running
+maximum. This is equally fast (`O(m log m)`) and avoids a priority
+queue. We chose the heap approach because it models the problem more
+directly — it assigns and reuses actual rooms one meeting at a time,
+which made the greedy-choice argument (always reuse the
+earliest-freeing room) easier to state and prove correct.
+ 
+## Problem C — 1D DP array over 2D DP table
+ 
+The standard textbook formulation of 0/1 knapsack uses a 2D table
+`dp[i][w]`, which is easier to visualize but uses `O(n·T)` memory —
+at `n = T = 2000`, that's 4 million entries. Since each row of the
+table only depends on the row before it, we collapsed it into a
+single 1D array of size `T + 1`, cutting memory to `O(T)` without
+changing the `O(n·T)` time complexity. The only added subtlety is
+iterating the budget dimension backwards per item, which is what
+preserves the "take-at-most-once" constraint.
+ 
+## General principle
+ 
+In all three cases, a valid, often simpler alternative existed with
+the *same* time complexity. We favored the option that was easiest
+to implement correctly and/or used the least memory, rather than the
+one that was conceptually simplest to first understand — a common
+trade-off in competitive and production code alike.
